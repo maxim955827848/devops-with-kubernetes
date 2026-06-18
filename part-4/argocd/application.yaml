@@ -1,0 +1,25 @@
+# ex 4.07 — ArgoCD tracks this Git repo as the source of truth and auto-syncs
+# manifest changes to the cluster.
+# Install ArgoCD first (local k3d is fine):
+#   kubectl create namespace argocd
+#   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: the-project
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/maxim955827848/devops-with-kubernetes.git
+    targetRevision: main
+    path: part-2/project/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: project
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

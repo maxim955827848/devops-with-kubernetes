@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broadcaster-dep
+  namespace: project
+  labels: { app: broadcaster }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: broadcaster }
+  template:
+    metadata:
+      labels: { app: broadcaster }
+    spec:
+      containers:
+        - name: broadcaster
+          image: <DOCKERHUB_USER>/broadcaster:1.0
+          env:
+            - name: NATS_URL
+              value: nats://nats:4222
+            - name: SUBJECT
+              value: todos.created

@@ -1,0 +1,9 @@
+# Apply after the CRD + controller are running:
+#   kubectl apply -f sample-dummysite.yaml
+# then: kubectl get deploy,svc -l app=dummysite-example
+apiVersion: dwk.io/v1
+kind: DummySite
+metadata:
+  name: example
+spec:
+  website_url: https://example.com

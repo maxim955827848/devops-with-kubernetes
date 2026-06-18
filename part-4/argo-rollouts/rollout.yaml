@@ -1,0 +1,36 @@
+# ex 4.04 / 4.05 — Argo Rollouts canary for the project backend, gated by a
+# Prometheus analysis that auto-rolls-back if the error rate spikes.
+# Install Argo Rollouts first (local k3d is fine):
+#   kubectl create namespace argo-rollouts
+#   kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: project-backend
+  namespace: project
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: project-backend
+  template:
+    metadata:
+      labels:
+        app: project-backend
+    spec:
+      containers:
+        - name: backend
+          image: <DOCKERHUB_USER>/project-backend:2.0
+          ports:
+            - containerPort: 3001
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { duration: 60 }
+        - analysis:
+            templates:
+              - templateName: error-rate
+        - setWeight: 50
+        - pause: { duration: 60 }
+        - setWeight: 100

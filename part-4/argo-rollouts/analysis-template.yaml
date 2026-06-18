@@ -1,0 +1,21 @@
+# ex 4.05 — Prometheus-based analysis; fails (and triggers rollback) if the
+# 5xx error rate exceeds 5% during the canary step.
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: error-rate
+  namespace: project
+spec:
+  metrics:
+    - name: error-rate
+      interval: 30s
+      count: 3
+      successCondition: result < 0.05
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://prometheus-server.prometheus.svc.cluster.local
+          query: |
+            sum(rate(http_requests_total{app="project-backend",status=~"5.."}[1m]))
+              /
+            sum(rate(http_requests_total{app="project-backend"}[1m]))

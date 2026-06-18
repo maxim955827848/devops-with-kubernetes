@@ -1,0 +1,37 @@
+# ex 5.04 — init container fetches a random Wikipedia article into a shared
+# volume; the main nginx container serves it; a sidecar tails/monitors it.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wikipedia
+  labels: { app: wikipedia }
+spec:
+  volumes:
+    - name: content
+      emptyDir: {}
+  initContainers:
+    - name: fetch-article
+      image: curlimages/curl:8.7.1
+      command:
+        - /bin/sh
+        - -c
+        - |
+          URL=$(curl -s -o /dev/null -w '%{redirect_url}' https://en.wikipedia.org/wiki/Special:Random)
+          curl -sL "$URL" -o /data/index.html
+      volumeMounts:
+        - name: content
+          mountPath: /data
+  containers:
+    - name: server
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: content
+          mountPath: /usr/share/nginx/html
+    - name: sidecar-monitor
+      image: busybox:1.36
+      command: ["/bin/sh", "-c", "while true; do echo \"[monitor] article bytes: $(wc -c < /data/index.html 2>/dev/null)\"; sleep 30; done"]
+      volumeMounts:
+        - name: content
+          mountPath: /data

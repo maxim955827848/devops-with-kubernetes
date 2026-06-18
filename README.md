@@ -48,8 +48,20 @@ part-5/  CRD + controller, service mesh, serverless, comparison docs
 | 3.08/3.09 | resource requests & limits | ✅ `part-3/resources-and-hpa.yaml` |
 | 3.10 | HorizontalPodAutoscaler | ✅ `part-3/resources-and-hpa.yaml` |
 | 3.11 | architecture diagram | ✅ `part-3/architecture.md` (Mermaid) |
-| 4.01–4.08 | probes, Prometheus/Grafana, Argo Rollouts, NATS, ArgoCD GitOps | ☁️ needs live cluster |
-| 5.01–5.08 | CRD+controller, service mesh, serverless, comparison docs | ☁️/📝 |
+| 4.01/4.02 | readiness/liveness probes | ✅ `part-4/probes/probes.md` |
+| 4.03 | Prometheus + Grafana | 🛠️ install (`part-5/docs/install-notes.md`) |
+| 4.04/4.05 | Argo Rollouts canary + Prometheus analysis | ✅ `part-4/argo-rollouts/` |
+| 4.06 | NATS broker + publisher/consumer | ✅ `part-4/messaging/` |
+| 4.07/4.08 | ArgoCD GitOps + image-update loop | ✅ `part-4/argocd/` |
+| 5.01 | CRD `DummySite` + kopf controller | ✅ `part-5/crd-controller/` |
+| 5.02 | service mesh (Linkerd, mTLS) | 🛠️ install (`part-5/docs/install-notes.md`) |
+| 5.03 | external-material reflection | ✅ `part-5/docs/reflection.md` |
+| 5.04 | initContainer + sidecar Wikipedia pod | ✅ `part-5/wikipedia/pod.yaml` |
+| 5.05 | platform comparison essay | ✅ `part-5/docs/Platform_Comparison.md` |
+| 5.06/5.07 | serverless (Knative scale-to-zero) | 🛠️ install (`part-5/docs/install-notes.md`) |
+| 5.08 | CNCF landscape writeup | ✅ `part-5/docs/landscape.md` |
+
+Legend: ✅ files written (deploy to count) · 🛠️ run the install commands provided · ☁️ needs GKE.
 
 > **Honest note:** ✅ means the code/manifests are written and the app logic is
 > verified locally. The course only marks an exercise complete once it's
