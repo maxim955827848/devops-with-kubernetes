@@ -1,9 +1,11 @@
 {
-  "name": "log-output",
+  "name": "ping-pong",
   "version": "1.0.0",
-  "description": "DevOps with Kubernetes - exercise 1.1 Log output",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2"
   }
 }

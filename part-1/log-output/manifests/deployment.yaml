@@ -1,0 +1,41 @@
+# log-output deployment: writer + reader containers sharing an emptyDir volume (ex 1.10)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-output-dep
+  labels:
+    app: log-output
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-output
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      volumes:
+        - name: shared-files
+          emptyDir: {}
+      containers:
+        - name: log-output-writer
+          image: <DOCKERHUB_USER>/log-output-writer:1.0
+          env:
+            - name: SHARED_DIR
+              value: /usr/src/app/files
+          volumeMounts:
+            - name: shared-files
+              mountPath: /usr/src/app/files
+        - name: log-output-reader
+          image: <DOCKERHUB_USER>/log-output-reader:1.0
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SHARED_DIR
+              value: /usr/src/app/files
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: shared-files
+              mountPath: /usr/src/app/files
