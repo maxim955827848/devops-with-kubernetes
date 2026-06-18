@@ -1,0 +1,25 @@
+# ex 2.09 — once a day, create a "Read <random wikipedia article>" todo by
+# POSTing to the project backend.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: daily-todo
+  namespace: project
+spec:
+  schedule: "0 0 * * *"   # every day at midnight
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: daily-todo
+              image: curlimages/curl:8.7.1
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  ARTICLE=$(curl -s -o /dev/null -w '%{redirect_url}' https://en.wikipedia.org/wiki/Special:Random)
+                  curl -s -X POST http://project-backend-svc:3001/todos \
+                    -H 'Content-Type: application/json' \
+                    -d "{\"todo\": \"Read $ARTICLE\"}"

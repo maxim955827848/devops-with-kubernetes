@@ -1,0 +1,8 @@
+# ex 2.06 — non-sensitive config injected into log-output reader.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-output-config
+  namespace: exercises
+data:
+  MESSAGE: "hello from a ConfigMap"

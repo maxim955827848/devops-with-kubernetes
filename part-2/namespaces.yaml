@@ -1,0 +1,10 @@
+# ex 2.03 + 2.04 — dedicated namespaces
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: exercises
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project

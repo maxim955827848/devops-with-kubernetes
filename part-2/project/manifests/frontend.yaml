@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-frontend-dep
+  namespace: project
+  labels:
+    app: project-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-frontend
+  template:
+    metadata:
+      labels:
+        app: project-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: <DOCKERHUB_USER>/project-frontend:2.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: BACKEND_URL
+              value: http://project-backend-svc:3001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-frontend-svc
+  namespace: project
+spec:
+  type: ClusterIP
+  selector:
+    app: project-frontend
+  ports:
+    - port: 2347
+      targetPort: 3000

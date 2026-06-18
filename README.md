@@ -28,7 +28,16 @@ part-5/  CRD + controller, service mesh, serverless, comparison docs
 | 1.11 | ping-pong counter persisted to PV | ✅ built & tested (survives restart) |
 | 1.12 | project caches external image (24h) on PV | ✅ |
 | 1.13 | project todo UI (form + list) on PV | ✅ built & tested |
-| 2.01–2.10 | connect pods, frontend/backend split, namespaces, Secrets, ConfigMaps, Postgres StatefulSet, CronJob | ⬜ to build (local k3d) |
+| 2.01 | log-output reader fetches ping count over the network | ✅ built & tested |
+| 2.02 | project split into frontend + backend (Service comms) | ✅ |
+| 2.03 | move exercises apps into `exercises` namespace | ✅ |
+| 2.04 | move project into `project` namespace | ✅ |
+| 2.05 | Secret injected as env var | ✅ |
+| 2.06 | ConfigMap injected into pods | ✅ |
+| 2.07 | ping-pong counter in PostgreSQL StatefulSet | ✅ |
+| 2.08 | project backend stores todos in PostgreSQL | ✅ |
+| 2.09 | daily CronJob creates a todo | ✅ |
+| 2.10 | labels/annotations for log aggregation | ✅ (labels on all manifests) |
 | 3.01–3.11 | GKE deploy, CI/CD, backups, resource limits, HPA, diagram | ☁️ needs your GKE/GCP; manifests+docs authorable |
 | 4.01–4.08 | probes, Prometheus/Grafana, Argo Rollouts, NATS, ArgoCD GitOps | ☁️ needs live cluster |
 | 5.01–5.08 | CRD+controller, service mesh, serverless, comparison docs | ☁️/📝 |
@@ -66,6 +75,43 @@ kubectl apply -f part-1/project/manifests
 kubectl get pods
 curl localhost:8081/            # log-output: "<timestamp>: <uuid>"
 curl localhost:8081/pingpong    # "pong N"
+```
+
+## Deploy Part 2 (k3d)
+
+```bash
+DH=<DOCKERHUB_USER>
+# build + import the v2 images
+docker build -t $DH/log-output-writer:2.0 part-2/log-output/writer
+docker build -t $DH/log-output-reader:2.0 part-2/log-output/reader
+docker build -t $DH/ping-pong:2.0         part-2/ping-pong
+docker build -t $DH/project-backend:2.0   part-2/project/backend
+docker build -t $DH/project-frontend:2.0  part-2/project/frontend
+for i in log-output-writer:2.0 log-output-reader:2.0 ping-pong:2.0 project-backend:2.0 project-frontend:2.0; do
+  k3d image import $DH/$i -c devops
+done
+grep -rl '<DOCKERHUB_USER>' part-2 | xargs sed -i '' "s/<DOCKERHUB_USER>/$DH/g"
+
+# namespaces
+kubectl apply -f part-2/namespaces.yaml
+
+# real secrets (copy the .example templates, set values — these files are gitignored)
+cp part-2/postgres/postgres-secret.example.yaml part-2/postgres/postgres-secret.yaml
+cp part-2/ping-pong/manifests/ping-pong-secret.example.yaml part-2/ping-pong/manifests/ping-pong-secret.yaml
+# edit both, then:
+kubectl apply -f part-2/postgres/postgres-secret.yaml -n exercises
+kubectl apply -f part-2/postgres/postgres-secret.yaml -n project
+kubectl apply -f part-2/ping-pong/manifests/ping-pong-secret.yaml -n exercises
+
+# postgres into both namespaces
+kubectl apply -f part-2/postgres/service.yaml -f part-2/postgres/statefulset.yaml -n exercises
+kubectl apply -f part-2/postgres/service.yaml -f part-2/postgres/statefulset.yaml -n project
+
+# apps
+kubectl apply -f part-2/ping-pong/manifests/deployment.yaml -f part-2/ping-pong/manifests/service.yaml
+kubectl apply -f part-2/log-output/manifests/
+kubectl apply -f part-2/project/manifests/
+kubectl apply -f part-2/cronjob/cronjob.yaml
 ```
 
 ## Prereqs

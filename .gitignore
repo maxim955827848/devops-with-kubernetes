@@ -5,3 +5,8 @@ npm-debug.log
 **/.DS_Store
 .env
 *.log
+.idea/
+.vscode/
+
+# Never commit real Kubernetes Secrets (only the *.example.yaml templates).
+*secret.yaml

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-output-dep
+  namespace: exercises
+  labels:
+    app: log-output
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-output
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      volumes:
+        - name: shared-files
+          emptyDir: {}
+      containers:
+        - name: log-output-writer
+          image: <DOCKERHUB_USER>/log-output-writer:2.0
+          env:
+            - name: SHARED_DIR
+              value: /usr/src/app/files
+          volumeMounts:
+            - name: shared-files
+              mountPath: /usr/src/app/files
+        - name: log-output-reader
+          image: <DOCKERHUB_USER>/log-output-reader:2.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SHARED_DIR
+              value: /usr/src/app/files
+            - name: PINGPONG_URL
+              value: http://ping-pong-svc:2346/pings
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: log-output-config
+                  key: MESSAGE
+          volumeMounts:
+            - name: shared-files
+              mountPath: /usr/src/app/files
