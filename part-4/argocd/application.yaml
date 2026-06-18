@@ -1,13 +1,24 @@
 # ex 4.07 — ArgoCD tracks this Git repo as the source of truth and auto-syncs
 # manifest changes to the cluster.
-# Install ArgoCD first (local k3d is fine):
+# ex 4.08 — Argo CD Image Updater watches GHCR for new backend/frontend tags and
+# writes the new tag back to Git, so a freshly built image rolls out automatically.
+# Install ArgoCD + the Image Updater first (local k3d is fine):
 #   kubectl create namespace argocd
 #   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+#   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/manifests/install.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: the-project
   namespace: argocd
+  annotations:
+    # ex 4.08 — track these images; write the chosen tag back into Git.
+    argocd-image-updater.argoproj.io/image-list: >-
+      backend=ghcr.io/maxim955827848/project-backend,
+      frontend=ghcr.io/maxim955827848/project-frontend
+    argocd-image-updater.argoproj.io/backend.update-strategy: newest-build
+    argocd-image-updater.argoproj.io/frontend.update-strategy: newest-build
+    argocd-image-updater.argoproj.io/write-back-method: git
 spec:
   project: default
   source:

@@ -15,4 +15,4 @@ spec:
       serviceAccountName: dummysite-controller
       containers:
         - name: controller
-          image: <DOCKERHUB_USER>/dummysite-controller:1.0
+          image: ghcr.io/maxim955827848/dummysite-controller:1.0

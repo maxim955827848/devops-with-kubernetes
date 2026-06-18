@@ -17,9 +17,17 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: <DOCKERHUB_USER>/project-frontend:2.0
+          image: ghcr.io/maxim955827848/project-frontend:2.0
           ports:
             - containerPort: 3000
+          # ex 3.08 / 3.09 — resource requests & limits.
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
           env:
             - name: PORT
               value: "3000"

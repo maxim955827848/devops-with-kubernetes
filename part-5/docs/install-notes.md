@@ -36,6 +36,6 @@ spec:
   template:
     spec:
       containers:
-        - image: <DOCKERHUB_USER>/ping-pong:2.0
+        - image: ghcr.io/maxim955827848/ping-pong:2.0
 EOF
 ```

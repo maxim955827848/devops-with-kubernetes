@@ -17,9 +17,16 @@ spec:
     spec:
       containers:
         - name: ping-pong
-          image: <DOCKERHUB_USER>/ping-pong:2.0
+          image: ghcr.io/maxim955827848/ping-pong:2.0
           ports:
             - containerPort: 3000
+          resources:        # ex 3.08 / 3.09
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
           env:
             - name: PORT
               value: "3000"

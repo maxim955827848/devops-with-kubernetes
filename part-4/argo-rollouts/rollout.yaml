@@ -3,6 +3,10 @@
 # Install Argo Rollouts first (local k3d is fine):
 #   kubectl create namespace argo-rollouts
 #   kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+# IMPORTANT: a Rollout and the Deployment in part-2/project/manifests/backend.yaml
+# both own the `app: project-backend` selector. Delete the Deployment before
+# applying this Rollout:
+#   kubectl delete deployment project-backend-dep -n project
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
@@ -17,12 +21,38 @@ spec:
     metadata:
       labels:
         app: project-backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3001"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: backend
-          image: <DOCKERHUB_USER>/project-backend:2.0
+          image: ghcr.io/maxim955827848/project-backend:2.0
           ports:
             - containerPort: 3001
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          env:
+            - name: PORT
+              value: "3001"
+            - name: NATS_URL
+              value: nats://nats:4222
+            - name: PGHOST
+              value: postgres-svc
+            - name: PGPORT
+              value: "5432"
+            - name: PGUSER
+              valueFrom: { secretKeyRef: { name: postgres-secret, key: POSTGRES_USER } }
+            - name: PGPASSWORD
+              valueFrom: { secretKeyRef: { name: postgres-secret, key: POSTGRES_PASSWORD } }
+            - name: PGDATABASE
+              valueFrom: { secretKeyRef: { name: postgres-secret, key: POSTGRES_DB } }
   strategy:
     canary:
       steps:

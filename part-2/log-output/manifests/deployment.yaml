@@ -20,7 +20,14 @@ spec:
           emptyDir: {}
       containers:
         - name: log-output-writer
-          image: <DOCKERHUB_USER>/log-output-writer:2.0
+          image: ghcr.io/maxim955827848/log-output-writer:2.0
+          resources:        # ex 3.08 / 3.09
+            requests:
+              cpu: "25m"
+              memory: "32Mi"
+            limits:
+              cpu: "100m"
+              memory: "64Mi"
           env:
             - name: SHARED_DIR
               value: /usr/src/app/files
@@ -28,9 +35,16 @@ spec:
             - name: shared-files
               mountPath: /usr/src/app/files
         - name: log-output-reader
-          image: <DOCKERHUB_USER>/log-output-reader:2.0
+          image: ghcr.io/maxim955827848/log-output-reader:2.0
           ports:
             - containerPort: 3000
+          resources:        # ex 3.08 / 3.09
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
           env:
             - name: PORT
               value: "3000"

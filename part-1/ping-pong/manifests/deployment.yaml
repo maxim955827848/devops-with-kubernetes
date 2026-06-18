@@ -20,7 +20,7 @@ spec:
             claimName: ping-pong-pvc
       containers:
         - name: ping-pong
-          image: <DOCKERHUB_USER>/ping-pong:1.0
+          image: ghcr.io/maxim955827848/ping-pong:1.0
           env:
             - name: PORT
               value: "3000"

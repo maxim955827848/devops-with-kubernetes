@@ -14,15 +14,33 @@ spec:
     metadata:
       labels:
         app: project-backend
+      # ex 4.03 / 4.05 — let Prometheus scrape /metrics on the app port.
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3001"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: backend
-          image: <DOCKERHUB_USER>/project-backend:2.0
+          image: ghcr.io/maxim955827848/project-backend:2.0
           ports:
             - containerPort: 3001
+          # ex 3.08 / 3.09 — requests let the scheduler place the pod and let the
+          # HPA (ex 3.10) compute CPU utilization; limits cap usage.
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
           env:
             - name: PORT
               value: "3001"
+            # ex 4.06 — publish todos.created to NATS (deployed in part-4/messaging).
+            # Best-effort: backend still runs if the broker is absent.
+            - name: NATS_URL
+              value: nats://nats:4222
             - name: PGHOST
               value: postgres-svc
             - name: PGPORT

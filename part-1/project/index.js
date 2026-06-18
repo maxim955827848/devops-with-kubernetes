@@ -17,6 +17,9 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
+const escapeHtml = (s) =>
+  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 const imageIsFresh = () => {
   try {
     return Date.now() - fs.statSync(IMAGE_FILE).mtimeMs < ONE_DAY_MS;
@@ -52,7 +55,7 @@ app.get('/image', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  const items = readTodos().map((t) => `<li>${t}</li>`).join('');
+  const items = readTodos().map((t) => `<li>${escapeHtml(t)}</li>`).join('');
   res.send(`<!doctype html>
 <html><head><title>The Project</title></head><body>
   <h1>The Project</h1>

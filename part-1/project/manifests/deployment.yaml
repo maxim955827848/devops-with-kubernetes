@@ -20,7 +20,7 @@ spec:
             claimName: project-pvc
       containers:
         - name: project
-          image: <DOCKERHUB_USER>/the-project:1.0
+          image: ghcr.io/maxim955827848/the-project:1.0
           env:
             - name: PORT
               value: "3000"
