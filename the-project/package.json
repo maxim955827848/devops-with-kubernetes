@@ -1,0 +1,9 @@
+{
+  "name": "the-project",
+  "version": "1.0.0",
+  "description": "DevOps with Kubernetes - the project (todo app, part 1)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  }
+}
