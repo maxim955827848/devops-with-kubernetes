@@ -40,8 +40,8 @@ jobs:
         run: |
           TAG=${GITHUB_SHA::8}
           build() { docker build -t "$IMAGE_PREFIX/$1:$TAG" "$2"; docker push "$IMAGE_PREFIX/$1:$TAG"; }
-          build project-backend  part-2/project/backend
-          build project-frontend part-2/project/frontend
+          build project-backend  the_project/todo-app/backend
+          build project-frontend the_project/todo-app/frontend
           echo "TAG=$TAG" >> "$GITHUB_ENV"
 
       - name: Deploy to cluster

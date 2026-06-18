@@ -23,5 +23,5 @@ Two things stood out:
    limits what an attacker can exfiltrate or call out to.
 
 Applied to this project, I'd add a default-deny policy per namespace and then
-allow only the specific flows shown in `part-3/architecture.md`. It's a high
+allow only the specific flows shown in `docs/architecture.md`. It's a high
 security return for low effort once a policy-aware CNI is in place.

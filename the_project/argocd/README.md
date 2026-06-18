@@ -1,7 +1,7 @@
 # GitOps with ArgoCD (ex 4.07, 4.08)
 
 ## 4.07 — ArgoCD as source of truth
-Apply `application.yaml`. ArgoCD watches `part-2/project/manifests` on `main`
+Apply `application.yaml`. ArgoCD watches `the_project/manifests` on `main`
 and auto-syncs (with prune + self-heal) any committed change to the cluster.
 
 ## 4.08 — close the loop: CI updates image tags in Git
@@ -13,7 +13,7 @@ ArgoCD then deploys it automatically. Sketch:
       - name: Bump image tag in Git (GitOps)
         run: |
           TAG=${GITHUB_SHA::8}
-          sed -i "s#\(project-backend:\).*#\1$TAG#" part-2/project/manifests/backend.yaml
+          sed -i "s#\(project-backend:\).*#\1$TAG#" the_project/manifests/backend.yaml
           git config user.name  "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
           git commit -am "ci: bump backend image to $TAG" || echo "no change"

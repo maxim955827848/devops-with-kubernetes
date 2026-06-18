@@ -47,9 +47,9 @@ jobs:
         run: |
           TAG=${GITHUB_SHA::8}
           kubectl create namespace "$NS" --dry-run=client -o yaml | kubectl apply -f -
-          docker build -t "$IMAGE_PREFIX/project-backend:$TAG"  part-2/project/backend  && docker push "$IMAGE_PREFIX/project-backend:$TAG"
-          docker build -t "$IMAGE_PREFIX/project-frontend:$TAG" part-2/project/frontend && docker push "$IMAGE_PREFIX/project-frontend:$TAG"
+          docker build -t "$IMAGE_PREFIX/project-backend:$TAG"  the_project/todo-app/backend  && docker push "$IMAGE_PREFIX/project-backend:$TAG"
+          docker build -t "$IMAGE_PREFIX/project-frontend:$TAG" the_project/todo-app/frontend && docker push "$IMAGE_PREFIX/project-frontend:$TAG"
           # apply project manifests into the preview namespace, overriding the image tags
-          kubectl apply -n "$NS" -f part-2/project/manifests/
+          kubectl apply -n "$NS" -f the_project/manifests/
           kubectl set image deployment/project-backend-dep  backend=$IMAGE_PREFIX/project-backend:$TAG   -n "$NS"
           kubectl set image deployment/project-frontend-dep frontend=$IMAGE_PREFIX/project-frontend:$TAG -n "$NS"

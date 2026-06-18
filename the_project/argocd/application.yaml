@@ -24,7 +24,7 @@ spec:
   source:
     repoURL: https://github.com/maxim955827848/devops-with-kubernetes.git
     targetRevision: main
-    path: part-2/project/manifests
+    path: the_project/manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: project

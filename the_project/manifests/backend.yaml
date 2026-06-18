@@ -37,7 +37,7 @@ spec:
           env:
             - name: PORT
               value: "3001"
-            # ex 4.06 — publish todos.created to NATS (deployed in part-4/messaging).
+            # ex 4.06 — publish todos.created to NATS (deployed in the_project/messaging).
             # Best-effort: backend still runs if the broker is absent.
             - name: NATS_URL
               value: nats://nats:4222

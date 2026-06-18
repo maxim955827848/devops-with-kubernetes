@@ -3,7 +3,7 @@
 # Install Argo Rollouts first (local k3d is fine):
 #   kubectl create namespace argo-rollouts
 #   kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
-# IMPORTANT: a Rollout and the Deployment in part-2/project/manifests/backend.yaml
+# IMPORTANT: a Rollout and the Deployment in the_project/manifests/backend.yaml
 # both own the `app: project-backend` selector. Delete the Deployment before
 # applying this Rollout:
 #   kubectl delete deployment project-backend-dep -n project
