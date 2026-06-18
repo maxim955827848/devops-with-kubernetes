@@ -1,0 +1,45 @@
+# ex 3.07 — daily pg_dump backup uploaded to a Google Cloud Storage bucket.
+# Prereqs:
+#   - a GCS bucket (e.g. gs://<your-bucket>-db-backups)
+#   - a Secret `gcs-backup-sa` holding a service-account key with Storage Object Admin
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+  namespace: project
+spec:
+  schedule: "0 2 * * *"   # 02:00 daily
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: sa-key
+              secret:
+                secretName: gcs-backup-sa
+          containers:
+            - name: backup
+              image: google/cloud-sdk:slim
+              envFrom:
+                - secretRef:
+                    name: postgres-secret
+              env:
+                - name: BUCKET
+                  value: gs://CHANGE-ME-db-backups
+                - name: PGHOST
+                  value: postgres-svc
+              volumeMounts:
+                - name: sa-key
+                  mountPath: /secrets
+                  readOnly: true
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  gcloud auth activate-service-account --key-file=/secrets/key.json
+                  apt-get update -qq && apt-get install -y -qq postgresql-client
+                  FILE="backup-$(date +%F-%H%M).sql"
+                  PGPASSWORD="$POSTGRES_PASSWORD" pg_dump -h "$PGHOST" -U "$POSTGRES_USER" "$POSTGRES_DB" > "/tmp/$FILE"
+                  gsutil cp "/tmp/$FILE" "$BUCKET/$FILE"

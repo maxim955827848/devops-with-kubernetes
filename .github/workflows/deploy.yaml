@@ -1,0 +1,52 @@
+# ex 3.03 — CI/CD: on push to main, build images, push to GHCR, deploy to GKE.
+# Required repo secrets (Settings -> Secrets and variables -> Actions):
+#   GKE_PROJECT  - your GCP project id
+#   GKE_SA_KEY   - JSON key of a service account with GKE deploy rights
+name: Deploy to GKE
+
+on:
+  push:
+    branches: [main]
+
+env:
+  GKE_CLUSTER: dwk-cluster
+  GKE_ZONE: europe-north1-b
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push images
+        run: |
+          TAG=${GITHUB_SHA::8}
+          build() { docker build -t "$IMAGE_PREFIX/$1:$TAG" "$2"; docker push "$IMAGE_PREFIX/$1:$TAG"; }
+          build project-backend  part-2/project/backend
+          build project-frontend part-2/project/frontend
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Deploy to cluster
+        run: |
+          kubectl set image deployment/project-backend-dep  backend=$IMAGE_PREFIX/project-backend:$TAG   -n project
+          kubectl set image deployment/project-frontend-dep frontend=$IMAGE_PREFIX/project-frontend:$TAG -n project
+          kubectl rollout status deployment/project-backend-dep -n project
+          kubectl rollout status deployment/project-frontend-dep -n project

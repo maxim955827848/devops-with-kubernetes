@@ -1,0 +1,41 @@
+# ex 3.08 / 3.09 — resource requests & limits for every container.
+# Add a `resources:` block like this to each container in the Part 1/2 deployments.
+# Example (project backend):
+#
+#   containers:
+#     - name: backend
+#       image: ...
+#       resources:
+#         requests:
+#           cpu: "50m"
+#           memory: "64Mi"
+#         limits:
+#           cpu: "200m"
+#           memory: "128Mi"
+#
+# Suggested values:
+#   log-output / ping-pong / frontend : requests 50m/64Mi, limits 200m/128Mi
+#   backend                           : requests 100m/128Mi, limits 300m/256Mi
+#   postgres                          : requests 100m/256Mi, limits 500m/512Mi
+---
+# ex 3.10 — Horizontal Pod Autoscaler for the project backend.
+# Requires metrics-server (built in on GKE). Backend must have CPU requests set (above).
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: project-backend-hpa
+  namespace: project
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: project-backend-dep
+  minReplicas: 1
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

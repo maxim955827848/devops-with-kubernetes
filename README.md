@@ -38,7 +38,16 @@ part-5/  CRD + controller, service mesh, serverless, comparison docs
 | 2.08 | project backend stores todos in PostgreSQL | ✅ |
 | 2.09 | daily CronJob creates a todo | ✅ |
 | 2.10 | labels/annotations for log aggregation | ✅ (labels on all manifests) |
-| 3.01–3.11 | GKE deploy, CI/CD, backups, resource limits, HPA, diagram | ☁️ needs your GKE/GCP; manifests+docs authorable |
+| 3.01 | deploy ping-pong/log-output to GKE | ☁️ deploy (reuse Part 2 manifests) |
+| 3.02 | cloud Ingress on GKE | ☁️ deploy (Part 2 ingress) |
+| 3.03 | CI/CD pipeline | ✅ `.github/workflows/deploy.yaml` (needs your GKE secrets) |
+| 3.04 | PR preview environments | ✅ `.github/workflows/preview-env.yaml` |
+| 3.05 | tear down preview on PR close | ✅ (same workflow) |
+| 3.06 | DBaaS vs DIY essay | ✅ `part-3/DBaaS_vs_DIY.md` |
+| 3.07 | DB backup CronJob to GCS | ✅ `part-3/backup-cronjob.yaml` |
+| 3.08/3.09 | resource requests & limits | ✅ `part-3/resources-and-hpa.yaml` |
+| 3.10 | HorizontalPodAutoscaler | ✅ `part-3/resources-and-hpa.yaml` |
+| 3.11 | architecture diagram | ✅ `part-3/architecture.md` (Mermaid) |
 | 4.01–4.08 | probes, Prometheus/Grafana, Argo Rollouts, NATS, ArgoCD GitOps | ☁️ needs live cluster |
 | 5.01–5.08 | CRD+controller, service mesh, serverless, comparison docs | ☁️/📝 |
 
